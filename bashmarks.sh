@@ -205,7 +205,11 @@ _purge_line() {
 
         # purge line
         sed "/$2/d" "$1" > "$t"
-        /bin/mv "$t" "$1"
+
+        # this was probably causing symlinks to be replaced with files, so I removed it
+        # /bin/mv "$t" "$1"
+
+        cat "$t" > "$1"
 
         # cleanup temp file
         /bin/rm -f -- "$t"
@@ -238,16 +242,86 @@ bashmarks_clear_env_vars() {
 export bashmarks_bookmarks_folder="$HOME/.local/bashmarks-favorites"
 
 bashmarks_set_SDIRS() {
-    local file_name="${bashmarks_bookmarks_folder}/$1"
+    local filename="${1:-s}"  # default s for using normal .sdirs file
+
+    local file_name="${bashmarks_bookmarks_folder}/${filename}"
     bashmarks_clear_env_vars
     if [ -f "$file_name" ]; then
         export SDIRS="$file_name"
     else
         echo "File $file_name does not exist"
     fi
+
+    bashmarks_info
 }
 
-alias bms="bashmarks_set_SDIRS"
+
+show_help() {
+    cat <<HERE
+    s  name            save the current directory as a bookmark
+    g  name            go to the bookmark
+    p  name            print the bookmark
+    d  name            delete the bookmark
+    l                  list  all bookmarks
+    _l                 list all bookmarks without dirname
+
+    bm  info           info - show the current bookmarks and the bookmarks folder
+    bm  i              info - show the current bookmarks and the bookmarks folder
+
+    bm  switch file    switch to another bookmark file (calls bms name)
+    bm  s file         switch to another bookmark file (calls bms name)
+
+    bm  h              help
+    bm help            show the source code of the function bm
+
+    bms file           switch (s = switch), use another bookmark file
+    bms                show the source code of the function bm
+HERE
+}
+
+
+list_bookmark_files() {
+    # ls -1 $bashmarks_bookmarks_folder
+    ls -l $bashmarks_bookmarks_folder
+}
+
+
+show_sdirs_and_bookmarks_folder() {
+    echo-red $(basename $SDIRS)
+    echo "SDIRS:                         $SDIRS"
+    echo "bashmarks_bookmarks_folder:    $bashmarks_bookmarks_folder"
+}
+
+bashmarks_info() {
+    show_sdirs_and_bookmarks_folder
+    echo
+    echo "bookmarks files"
+    list_bookmark_files
+}
+
+bm() {
+    local sub_command=$1
+    shift
+
+    [[ "$sub_command" == "" ]]        &&  show_help && return
+    [[ "$sub_command" == "h" ]]       &&  show_help && return
+    [[ "$sub_command" == "help" ]]    &&  declare -f bm && return                             # help
+    [[ "$sub_command" == "-h" ]]      &&  declare -f bm && return
+    [[ "$sub_command" == "info" ]]    &&  bashmarks_info && return
+    [[ "$sub_command" == "i" ]]       &&  bashmarks_info && return
+    [[ "$sub_command" == "l" ]]       &&  list_bookmark_files
+    [[ "$sub_command" == "s" ]]       &&  bashmarks_set_SDIRS "$@"
+    [[ "$sub_command" == "switch" ]]  &&  bashmarks_set_SDIRS "$@"
+}
+
+
+bm_define_aliases() {
+    alias bmi="bm info"
+    alias bmh="bm help"
+    alias bms="bashmarks_set_SDIRS"
+}
+
+bm_define_aliases
 
 # export some of the functions
 
