@@ -57,7 +57,7 @@ s() {
 }
 
 # jump to bookmark
-function bashmarks_goto_bookmark {
+bashmarks_goto_bookmark() {
     check_help $1
     source $SDIRS
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
@@ -70,12 +70,12 @@ function bashmarks_goto_bookmark {
     fi
 }
 
-function g() {
+g() {
     bashmarks_goto_bookmark "$@"
 }
 
 # jump to bookmark in windows explorer
-function bashmarks_open_in_explorer {
+bashmarks_open_in_explorer() {
     check_help $1
     source $SDIRS
 
@@ -103,7 +103,7 @@ ep() {
 }
 
 # print bookmark
-function bashmarks_print_bookmark {
+bashmarks_print_bookmark() {
     check_help $1
     source $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
@@ -114,7 +114,7 @@ p() {
 }
 
 # delete bookmark
-function bashmarks_delete_bookmark {
+bashmarks_delete_bookmark() {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
@@ -128,7 +128,7 @@ d() {
 }
 
 # print out help for the forgetful
-function bashmarks_check_help {
+bashmarks_check_help() {
     if [ "$1" = "-h" ] || [ "$1" = "-help" ] || [ "$1" = "--help" ] ; then
         echo ''
         echo 's <bookmark_name> - Saves the current directory as "bookmark_name"'
@@ -141,7 +141,7 @@ function bashmarks_check_help {
 }
 
 # list bookmarks with dirnam
-function l {
+bashmarks_list() {
     bashmarks_check_help $1
     source $SDIRS
 
@@ -152,22 +152,22 @@ function l {
     # env | grep "^DIR_" | cut -c5- | sort |grep "^.*="
 }
 
-bashmarks_list() {
+l() {
     # TODO replace the short l at several places with this function
     # Using l, p, and so on in a large number of files makes later changes difficult.
 
-    l "$@"
+    bashmarks_list "$@"
 
 }
 
 # list bookmarks without dirname
-function _l {
+_l() {
     source $SDIRS
     env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "="
 }
 
 # validate bookmark name
-function _bookmark_name_valid {
+_bookmark_name_valid() {
     exit_message=""
     if [ -z $1 ]; then
         exit_message="bookmark name required"
@@ -179,7 +179,7 @@ function _bookmark_name_valid {
 }
 
 # completion command
-function _comp {
+_comp() {
     local curw
     COMPREPLY=()
     curw=${COMP_WORDS[COMP_CWORD]}
@@ -188,12 +188,12 @@ function _comp {
 }
 
 # ZSH completion command
-function _compzsh {
+_compzsh() {
     reply=($(_l))
 }
 
 # safe delete line from sdirs
-function _purge_line {
+_purge_line() {
     if [ -s "$1" ]; then
         # safely create a temp file
         t=$(mktemp -t bashmarks.XXXXXX) || exit 1
