@@ -190,4 +190,14 @@ else
     complete -F _comp g
     complete -F _comp p
     complete -F _comp d
+	complete -F _comp ep
 fi
+
+
+
+# export some of the functions
+
+export -f g
+export -f l
+export -f p
+export -f check_help
