@@ -42,8 +42,8 @@ RED="0;31m"
 GREEN="0;33m"
 
 # save current directory to bookmarks
-function s {
-    check_help $1
+bashmarks_save_bookmark() {
+    bashmarks_check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
         _purge_line "$SDIRS" "export DIR_$1="
@@ -52,9 +52,13 @@ function s {
     fi
 }
 
+s() {
+    bashmarks_save_bookmark "$@"
+}
+
 # jump to bookmark
-function g {
-    check_help $1
+bashmarks_goto_bookmark() {
+    bashmarks_check_help $1
     source $SDIRS
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
     if [ -d "$target" ]; then
@@ -66,9 +70,13 @@ function g {
     fi
 }
 
+g() {
+    bashmarks_goto_bookmark "$@"
+}
+
 # jump to bookmark in windows explorer
-function ep {
-    check_help $1
+bashmarks_open_in_explorer() {
+    bashmarks_check_help $1
     source $SDIRS
 
 	#If $1 is ".", set target to the current directory
@@ -90,16 +98,24 @@ function ep {
     fi
 }
 
+ep() {
+    bashmarks_open_in_explorer "$@"
+}
+
 # print bookmark
-function p {
-    check_help $1
+bashmarks_print_bookmark() {
+    bashmarks_check_help $1
     source $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
 }
 
+p() {
+    bashmarks_print_bookmark "$@"
+}
+
 # delete bookmark
-function d {
-    check_help $1
+bashmarks_delete_bookmark() {
+    bashmarks_check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
         _purge_line "$SDIRS" "export DIR_$1="
@@ -107,8 +123,12 @@ function d {
     fi
 }
 
+d() {
+    bashmarks_delete_bookmark "$@"
+}
+
 # print out help for the forgetful
-function check_help {
+bashmarks_check_help() {
     if [ "$1" = "-h" ] || [ "$1" = "-help" ] || [ "$1" = "--help" ] ; then
         echo ''
         echo 's <bookmark_name> - Saves the current directory as "bookmark_name"'
@@ -121,8 +141,8 @@ function check_help {
 }
 
 # list bookmarks with dirnam
-function l {
-    check_help $1
+bashmarks_list() {
+    bashmarks_check_help $1
     source $SDIRS
 
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
@@ -131,14 +151,27 @@ function l {
     # uncomment this line if color output is not working with the line above
     # env | grep "^DIR_" | cut -c5- | sort |grep "^.*="
 }
+
+l() {
+    # TODO replace the short l at several places with this function
+    # Using l, p, and so on in a large number of files makes later changes difficult.
+
+    bashmarks_list "$@"
+
+}
+
 # list bookmarks without dirname
-function _l {
+bashmarks_get_bookmark_names() {
     source $SDIRS
-    env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "=" 
+    env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "="
+}
+
+_l() {
+    bashmarks_get_bookmark_names
 }
 
 # validate bookmark name
-function _bookmark_name_valid {
+_bookmark_name_valid() {
     exit_message=""
     if [ -z $1 ]; then
         exit_message="bookmark name required"
@@ -150,21 +183,21 @@ function _bookmark_name_valid {
 }
 
 # completion command
-function _comp {
+_comp() {
     local curw
     COMPREPLY=()
     curw=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=($(compgen -W '`_l`' -- $curw))
+    COMPREPLY=($(compgen -W "$(eval bashmarks_get_bookmark_names)" -- $curw))
     return 0
 }
 
 # ZSH completion command
-function _compzsh {
-    reply=($(_l))
+_compzsh() {
+    reply=($(bashmarks_get_bookmark_names))
 }
 
 # safe delete line from sdirs
-function _purge_line {
+_purge_line() {
     if [ -s "$1" ]; then
         # safely create a temp file
         t=$(mktemp -t bashmarks.XXXXXX) || exit 1
@@ -200,4 +233,4 @@ fi
 export -f g
 export -f l
 export -f p
-export -f check_help
+export -f bashmarks_check_help
