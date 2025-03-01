@@ -231,6 +231,12 @@ fi
 # export some of the functions
 
 export -f g
+export -f bashmarks_save_bookmark
+
 export -f l
+export -f bashmark
+
 export -f p
+export -f bashmarks_print_bookmark
+
 export -f bashmarks_check_help
