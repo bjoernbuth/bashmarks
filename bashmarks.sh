@@ -43,7 +43,7 @@ GREEN="0;33m"
 
 # save current directory to bookmarks
 bashmarks_save_bookmark() {
-    check_help $1
+    bashmarks_check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
         _purge_line "$SDIRS" "export DIR_$1="
@@ -58,7 +58,7 @@ s() {
 
 # jump to bookmark
 bashmarks_goto_bookmark() {
-    check_help $1
+    bashmarks_check_help $1
     source $SDIRS
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
     if [ -d "$target" ]; then
@@ -76,7 +76,7 @@ g() {
 
 # jump to bookmark in windows explorer
 bashmarks_open_in_explorer() {
-    check_help $1
+    bashmarks_check_help $1
     source $SDIRS
 
 	#If $1 is ".", set target to the current directory
@@ -104,7 +104,7 @@ ep() {
 
 # print bookmark
 bashmarks_print_bookmark() {
-    check_help $1
+    bashmarks_check_help $1
     source $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
 }
@@ -115,7 +115,7 @@ p() {
 
 # delete bookmark
 bashmarks_delete_bookmark() {
-    check_help $1
+    bashmarks_check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
         _purge_line "$SDIRS" "export DIR_$1="
@@ -161,9 +161,13 @@ l() {
 }
 
 # list bookmarks without dirname
-_l() {
+bashmarks_get_bookmark_names() {
     source $SDIRS
     env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "="
+}
+
+_l() {
+    bashmarks_get_bookmark_names
 }
 
 # validate bookmark name
@@ -229,4 +233,4 @@ fi
 export -f g
 export -f l
 export -f p
-export -f check_help
+export -f bashmarks_check_help
