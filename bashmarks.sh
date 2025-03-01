@@ -187,13 +187,13 @@ _comp() {
     local curw
     COMPREPLY=()
     curw=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=($(compgen -W "$(eval _l)" -- $curw))
+    COMPREPLY=($(compgen -W "$(eval bashmarks_get_bookmark_names)" -- $curw))
     return 0
 }
 
 # ZSH completion command
 _compzsh() {
-    reply=($(_l))
+    reply=($(bashmarks_get_bookmark_names))
 }
 
 # safe delete line from sdirs
