@@ -227,6 +227,27 @@ else
 fi
 
 
+bashmarks_clear_env_vars() {
+    source $SDIRS
+    for i in $(bashmarks_get_bookmark_names); do
+        unset "DIR_$i"
+    done
+}
+
+
+export bashmarks_bookmarks_folder="$HOME/.local/bashmarks-favorites"
+
+bashmarks_set_SDIRS() {
+    local file_name="${bashmarks_bookmarks_folder}/$1"
+    bashmarks_clear_env_vars
+    if [ -f "$file_name" ]; then
+        export SDIRS="$file_name"
+    else
+        echo "File $file_name does not exist"
+    fi
+}
+
+alias bms="bashmarks_set_SDIRS"
 
 # export some of the functions
 
@@ -234,9 +255,11 @@ export -f g
 export -f bashmarks_save_bookmark
 
 export -f l
-export -f bashmark
+export -f bashmarks_list
 
 export -f p
 export -f bashmarks_print_bookmark
 
 export -f bashmarks_check_help
+
+export -f bashmarks_clear_env_vars
