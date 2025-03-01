@@ -58,7 +58,31 @@ function g {
     source $SDIRS
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
     if [ -d "$target" ]; then
-        cd "$target"
+        builtin cd "$target"
+    elif [ ! -n "$target" ]; then
+        echo -e "\033[${RED}WARNING: '${1}' bashmark does not exist\033[00m"
+    else
+        echo -e "\033[${RED}WARNING: '${target}' does not exist\033[00m"
+    fi
+}
+
+# jump to bookmark in windows explorer
+function ep {
+    check_help $1
+    source $SDIRS
+
+	#If $1 is ".", set target to the current directory
+	start_dir="$(pwd)"
+	if [ "$1" == "." ]; then
+		target="$(pwd)"
+	else
+		target="$(eval $(echo echo $(echo \$DIR_$1)))"
+	fi
+
+    if [ -d "$target" ]; then
+        builtin cd "$target"
+		explorer.exe .
+		bultin cd "$start_dir"
     elif [ ! -n "$target" ]; then
         echo -e "\033[${RED}WARNING: '${1}' bashmark does not exist\033[00m"
     else
