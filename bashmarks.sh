@@ -42,7 +42,7 @@ RED="0;31m"
 GREEN="0;33m"
 
 # save current directory to bookmarks
-function s {
+bashmarks_save_bookmark() {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
@@ -50,6 +50,10 @@ function s {
         CURDIR=$(echo $PWD| sed "s#^$HOME#\$HOME#g")
         echo "export DIR_$1=\"$CURDIR\"" >> $SDIRS
     fi
+}
+
+s() {
+    bashmarks_save_bookmark "$@"
 }
 
 # jump to bookmark
