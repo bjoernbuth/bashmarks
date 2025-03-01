@@ -131,10 +131,19 @@ function l {
     # uncomment this line if color output is not working with the line above
     # env | grep "^DIR_" | cut -c5- | sort |grep "^.*="
 }
+
+bashmarks_list() {
+    # TODO replace the short l at several places with this function
+    # Using l, p, and so on in a large number of files makes later changes difficult.
+
+    l "$@"
+
+}
+
 # list bookmarks without dirname
 function _l {
     source $SDIRS
-    env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "=" 
+    env | grep "^DIR_" | cut -c5- | sort | grep "^.*=" | cut -f1 -d "="
 }
 
 # validate bookmark name
