@@ -53,7 +53,7 @@ function s {
 }
 
 # jump to bookmark
-function g {
+function bashmarks_goto_bookmark {
     check_help $1
     source $SDIRS
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
@@ -66,8 +66,12 @@ function g {
     fi
 }
 
+function g() {
+    bashmarks_goto_bookmark "$@"
+}
+
 # jump to bookmark in windows explorer
-function ep {
+function bashmarks_open_in_explorer {
     check_help $1
     source $SDIRS
 
@@ -90,21 +94,33 @@ function ep {
     fi
 }
 
+ep() {
+    bashmarks_open_in_explorer "$@"
+}
+
 # print bookmark
-function p {
+function bashmarks_print_bookmark {
     check_help $1
     source $SDIRS
     echo "$(eval $(echo echo $(echo \$DIR_$1)))"
 }
 
+p() {
+    bashmarks_print_bookmark "$@"
+}
+
 # delete bookmark
-function d {
+function bashmarks_delete_bookmark {
     check_help $1
     _bookmark_name_valid "$@"
     if [ -z "$exit_message" ]; then
         _purge_line "$SDIRS" "export DIR_$1="
         unset "DIR_$1"
     fi
+}
+
+d() {
+    bashmarks_delete_bookmark "$@"
 }
 
 # print out help for the forgetful
