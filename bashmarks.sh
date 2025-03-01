@@ -124,7 +124,7 @@ d() {
 }
 
 # print out help for the forgetful
-function check_help {
+function bashmarks_check_help {
     if [ "$1" = "-h" ] || [ "$1" = "-help" ] || [ "$1" = "--help" ] ; then
         echo ''
         echo 's <bookmark_name> - Saves the current directory as "bookmark_name"'
@@ -138,7 +138,7 @@ function check_help {
 
 # list bookmarks with dirnam
 function l {
-    check_help $1
+    bashmarks_check_help $1
     source $SDIRS
 
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
